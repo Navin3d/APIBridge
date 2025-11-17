@@ -1,8 +1,6 @@
 import asyncio
 
 from google.adk.agents.llm_agent import Agent
-from google.adk.plugins import LoggingPlugin
-from google.adk.runners import InMemoryRunner
 from google.adk.tools import AgentTool
 
 from tools_generator.generator.agent_generator import AgentGenerator
@@ -136,7 +134,8 @@ def write_code_to_tool(code: str) -> None:
     print("writing tool to code")
     print(code)
     ag  = AgentGenerator(state_data["org_name"])
-    ag.write_to_tool(code)
+    written = ag.write_to_tool(code)
+    ag.start_application()
 
 
 tool_generation_agent = Agent(
@@ -249,19 +248,3 @@ root_agent = Agent(
         AgentTool(tool_generation_agent),
     ]
 )
-
-
-runner = InMemoryRunner(
-    agent=root_agent,
-    plugins=[
-        LoggingPlugin()
-    ],
-)
-
-async def invoke():
-    response = await runner.run_debug("Find recent papers on quantum computing")
-    print(response)
-
-if __name__ == "__main__":
-    # The ADK is built on asyncio
-    asyncio.run(invoke())

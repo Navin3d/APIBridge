@@ -1,5 +1,6 @@
 import os
 import subprocess
+import random
 
 class AgentGenerator:
     def __init__(self, project: str, path: str = "/Users/navin3d/Programming/Python/Machine-Learning/langchain/Generated_Agents"):
@@ -11,6 +12,7 @@ class AgentGenerator:
     def generate(self):
         self.create_venv()
         self.install_dependencies()
+        self.create_requirements_txt()
         self.create_agent()
         self.create_tool_file()
         self.map_tool_with_agent()
@@ -48,6 +50,20 @@ class AgentGenerator:
         print("Installing dependencies...")
         pip_path = os.path.join(self.venv_dir, "bin", "pip")
         self.run_subprocess(f"{pip_path} install google-adk requests")
+
+    def create_requirements_txt(self):
+        print("creating requirements.txt dependencies...")
+        pip_path = os.path.join(self.venv_dir, "bin", "pip")
+        self.run_subprocess(f"{pip_path} freeze >> requirements.txt")
+
+    def deploy(self):
+        print("Attempting Deployment")
+
+    def start_application(self):
+        port = 8082
+        print(f"Starting application in port: http://localhost:{port}")
+        pip_path = os.path.join(self.venv_dir, "bin")
+        self.run_subprocess(f"{pip_path} adk web --port {port}")
 
     def create_agent(self):
         # Run ADK CLI to create the new agent project
