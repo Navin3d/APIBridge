@@ -1,0 +1,360 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NatWest Bank Payments API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/payments/initiate": {
+      "post": {
+        "summary": "Initiate Payment",
+        "description": "Initiate a single payment by providing sender, recipient, amount and currency details.\n\nArgs:\n    request (PaymentInitiationRequest): Payment initiation payload.\n\nReturns:\n    PaymentInitiationResponse: Contains new payment ID, status, and creation time.",
+        "operationId": "initiate_payment_payments_initiate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentInitiationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentInitiationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/{payment_id}/status": {
+      "get": {
+        "summary": "Get Payment Status",
+        "description": "Check the current status and details of a specific payment using its payment_id.\n\nArgs:\n    payment_id (str): The unique payment identifier returned at creation.\n\nReturns:\n    PaymentStatusResponse: Contains status, processed timestamp, amount, currency and reference.\nRaises:\n    HTTPException: If the payment_id does not exist.",
+        "operationId": "get_payment_status_payments__payment_id__status_get",
+        "parameters": [
+          {
+            "name": "payment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Payment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payouts/send": {
+      "post": {
+        "summary": "Send Payout",
+        "description": "Initiate a payout to a recipient’s account.\n\nArgs:\n    request (PayoutRequest): Payout details including payee name, bank details, amount, and currency.\n\nReturns:\n    PayoutResponse: Contains new payout ID, status, and sent timestamp.",
+        "operationId": "send_payout_payouts_send_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayoutResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "PaymentInitiationRequest": {
+        "properties": {
+          "debtor_account": {
+            "type": "string",
+            "title": "Debtor Account"
+          },
+          "creditor_account": {
+            "type": "string",
+            "title": "Creditor Account"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "debtor_account",
+          "creditor_account",
+          "amount",
+          "currency",
+          "reference"
+        ],
+        "title": "PaymentInitiationRequest",
+        "description": "Request body for initiating a payment.\nFields:\n  debtor_account (str): The account number of the sender.\n  creditor_account (str): The account number of the recipient.\n  amount (float): Amount to send.\n  currency (str): Currency code (e.g. 'INR', 'USD').\n  reference (Optional[str]): Payment reference (optional)."
+      },
+      "PaymentInitiationResponse": {
+        "properties": {
+          "payment_id": {
+            "type": "string",
+            "title": "Payment Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payment_id",
+          "status",
+          "created_at"
+        ],
+        "title": "PaymentInitiationResponse",
+        "description": "Response body for payment initiation.\nFields:\n  payment_id (str): Unique identifier for the payment.\n  status (str): Status of the payment (e.g. 'PENDING').\n  created_at (str): ISO timestamp of creation."
+      },
+      "PaymentStatusResponse": {
+        "properties": {
+          "payment_id": {
+            "type": "string",
+            "title": "Payment Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "processed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Processed At"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payment_id",
+          "status",
+          "processed_at",
+          "amount",
+          "currency",
+          "reference"
+        ],
+        "title": "PaymentStatusResponse",
+        "description": "Response for payment status query.\nFields:\n  payment_id (str): Unique identifier for the payment.\n  status (str): Current status (e.g. 'PENDING', 'COMPLETED').\n  processed_at (Optional[str]): ISO timestamp when processed, or None if pending.\n  amount (float): Payment amount.\n  currency (str): Currency code.\n  reference (Optional[str]): Payment reference (optional)."
+      },
+      "PayoutRequest": {
+        "properties": {
+          "payee_name": {
+            "type": "string",
+            "title": "Payee Name"
+          },
+          "payee_bank_details": {
+            "type": "string",
+            "title": "Payee Bank Details"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payee_name",
+          "payee_bank_details",
+          "amount",
+          "currency",
+          "reference"
+        ],
+        "title": "PayoutRequest",
+        "description": "Request body for sending a payout.\nFields:\n  payee_name (str): Name of the payout recipient.\n  payee_bank_details (str): Bank details (e.g., account or IFSC).\n  amount (float): Amount to send.\n  currency (str): Currency code.\n  reference (Optional[str]): Payment reference (optional)."
+      },
+      "PayoutResponse": {
+        "properties": {
+          "payout_id": {
+            "type": "string",
+            "title": "Payout Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "sent_at": {
+            "type": "string",
+            "title": "Sent At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payout_id",
+          "status",
+          "sent_at"
+        ],
+        "title": "PayoutResponse",
+        "description": "Response for payout initiation.\nFields:\n  payout_id (str): Unique identifier for this payout.\n  status (str): Status (e.g., 'SENT').\n  sent_at (str): UTC ISO timestamp when sent."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
