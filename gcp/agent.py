@@ -26,7 +26,7 @@ except Exception:
     pass
 
 os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "europe-west1")
-os.environ.setdefault("GOOGLE_API_KEY", "AIzaSyCu_U3QR7xByWvZgGMTYj0wXrIJJ1paBNU")
+os.environ.setdefault("GOOGLE_API_KEY", "")
 
 # Configure model connection
 gemma_model_name = os.getenv("GEMMA_MODEL_NAME", "gemma3:270m")
